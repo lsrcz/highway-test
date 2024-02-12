@@ -1,0 +1,3 @@
+[submodule "rvv-intrinsics-cpp"]
+	path = rvv-intrinsics-cpp
+	url = https://github.com/lsrcz/rvv-intrinsics-cpp

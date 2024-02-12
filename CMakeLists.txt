@@ -18,9 +18,10 @@ check_cxx_source_compiles(
 set(FLAGS)
 if(BUILD_RISCV)
   list(APPEND FLAGS -march=rv64gcv1p0)
+  add_subdirectory(rvv-intrinsics-cpp)
 endif()
 
 add_executable(main main.cpp)
 target_include_directories(main PRIVATE ${PROJECT_SOURCE_DIR})
 target_compile_options(main PRIVATE ${FLAGS})
-target_link_libraries(main PRIVATE hwy)
+target_link_libraries(main PRIVATE hwy rvv)

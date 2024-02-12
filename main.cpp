@@ -5,6 +5,11 @@
 #include <hwy/highway.h>
 #include <stdio.h>
 #include <string.h>
+#if defined(__riscv)
+#include <rvv/int.h>
+#include <rvv/load_store.h>
+#include <rvv/misc.h>
+#endif
 
 namespace project {
 namespace HWY_NAMESPACE { // required: unique per target
@@ -59,23 +64,26 @@ void ManualReorderWidenMulAccumulateTest(const uint16_t *HWY_RESTRICT a,
                                          const uint16_t *HWY_RESTRICT b,
                                          uint32_t *HWY_RESTRICT s0,
                                          uint32_t *HWY_RESTRICT s1) {
-  size_t vl = __riscv_vsetvlmax_e16m1();
-  vuint16m1_t ar = __riscv_vle16_v_u16m1(a, vl);
-  vuint16m1_t br = __riscv_vle16_v_u16m1(b, vl);
+  rvv::vl_t<16> vl = rvv::vsetvlmax<16>();
+  using V16M1 = rvv::vreg_t<uint16_t, 16>;
+  V16M1 ar = rvv::vle(a, vl);
+  V16M1 br = rvv::vle(b, vl);
 
-  size_t vl32 = __riscv_vsetvlmax_e32m1();
-  vuint32m1_t s0r = __riscv_vle32_v_u32m1(s0, vl);
-  vuint32m1_t s1r = __riscv_vmv_v_x_u32m1(0, vl);
+  rvv::vl_t<32> vl32 = rvv::vsetvlmax<32>();
+  using V32M1 = rvv::vreg_t<uint32_t, 32>;
+  V32M1 s0r = rvv::vle(s0, vl32);
+  V32M1 s1r = rvv::vmv_v(uint32_t{0}, vl32);
   // Not supported on clang 17.0.6
   // vuint32m2_t s0s1r = __riscv_vcreate_v_u32m1_u32m2(s0r, s1r);
-  vuint32m2_t s0s1r = __riscv_vundefined_u32m2();
+  using V32M2 = rvv::vreg_t<uint32_t, 16>;
+  V32M2 s0s1r = __riscv_vundefined_u32m2();
   s0s1r = __riscv_vset_v_u32m1_u32m2(s0s1r, 0, s0r);
   s0s1r = __riscv_vset_v_u32m1_u32m2(s0s1r, 1, s1r);
-  vuint32m2_t cr = __riscv_vwmaccu_vv_u32m2(s0s1r, ar, br, vl);
-  vuint32m1_t news0r = __riscv_vget_v_u32m2_u32m1(cr, 0);
-  vuint32m1_t news1r = __riscv_vget_v_u32m2_u32m1(cr, 1);
-  __riscv_vse32_v_u32m1(s0, news0r, vl32);
-  __riscv_vse32_v_u32m1(s1, news1r, vl32);
+  V32M2 cr = rvv::vwmaccu(s0s1r, ar, br, vl);
+  V32M1 news0r = __riscv_vget_v_u32m2_u32m1(cr, 0);
+  V32M1 news1r = __riscv_vget_v_u32m2_u32m1(cr, 1);
+  rvv::vse(s0, news0r, vl32);
+  rvv::vse(s1, news1r, vl32);
 }
 
 #endif
