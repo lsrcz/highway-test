@@ -26,6 +26,8 @@
               riscv_llvm.bintools
               riscv_pkgs.gtest
               riscv_pkgs.libhwy
+              riscv_pkgs.glibc.static
+              pkgs.qemu
               pkgs.clang
               pkgs.libhwy
               pkgs.clang-tools_17
