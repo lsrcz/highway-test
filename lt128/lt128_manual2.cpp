@@ -19,7 +19,7 @@ void Lt128Manual2Intrinsics<hn::ScalableTag<uint64_t>>(
   auto ltrshifted = rvv::vsll(ltr, 1, vl);
   auto ltloeqhi = rvv::vand(ltrshifted, eqr, vl);
   auto good = rvv::vor(ltr, ltloeqhi, vl);
-  auto masked = rvv::vand(good, 0xaaaaaaaa, vl);
+  auto masked = rvv::vand(good, 0xaaaaaaaaaaaaaaaa, vl);
   auto masked_shifted_right = rvv::vsrl(masked, 1, vl);
   auto final = rvv::vor(masked, masked_shifted_right, vl);
   auto final_mask = rvv::vreinterpret<rvv::vmask_t<64>>(
@@ -35,11 +35,13 @@ void Lt128Manual2<hn::ScalableTag<uint64_t>>(const uint64_t *HWY_RESTRICT a,
                "vle64.v	v9, (a1)\n\t"
                "# LLVM-MCA-BEGIN Lt128Manual2-lmul1\n\t"
                "vmsltu.vv	v10, v8, v9\n\t"
-               "vmseq.vv	v8, v8, v9\n\t"
                "lui	a0, 349525\n\t"
-               "vadd.vv	v9, v10, v10\n\t"
+               "vmseq.vv	v8, v8, v9\n\t"
                "addiw	a0, a0, 1365\n\t"
+               "vadd.vv	v9, v10, v10\n\t"
+               "slli	a1, a0, 32\n\t"
                "vand.vv	v8, v9, v8\n\t"
+               "add	a0, a0, a1\n\t"
                "vor.vv	v8, v10, v8\n\t"
                "slli	a0, a0, 1\n\t"
                "vand.vx	v8, v8, a0\n\t"

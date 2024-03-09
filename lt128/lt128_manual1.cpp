@@ -21,8 +21,8 @@ void Lt128Manual1Intrinsics<hn::ScalableTag<uint64_t>>(
       rvv::vreinterpret<rvv::vreg_t<uint8_t, 8>>(ltm));
   auto eqrshifted = rvv::vsrl(eqr, 1, vl);
   auto ltrshifted = rvv::vsrl(ltr, 1, vl);
-  auto eqrshiftedmasked = rvv::vand(eqrshifted, 0x55555555, vl);
-  auto ltrshiftedmasked = rvv::vand(ltrshifted, 0x55555555, vl);
+  auto eqrshiftedmasked = rvv::vand(eqrshifted, 0x5555555555555555, vl);
+  auto ltrshiftedmasked = rvv::vand(ltrshifted, 0x5555555555555555, vl);
   auto eqhiltlo = rvv::vand(eqrshiftedmasked, ltr, vl);
   auto good = rvv::vor(eqhiltlo, ltrshiftedmasked, vl);
   auto final = rvv::vmul(good, 3, vl);
@@ -42,10 +42,12 @@ void Lt128Manual1<hn::ScalableTag<uint64_t>>(const uint64_t *HWY_RESTRICT a,
                "vle64.v	v9, (%[b])\n\t"
                "# LLVM-MCA-BEGIN Lt128Manual1-lmul1\n\t"
                "vmseq.vv	v10, v8, v9\n\t"
-               "vmsltu.vv	v8, v8, v9\n\t"
                "lui	a0, 349525\n\t"
-               "vsrl.vi	v9, v10, 1\n\t"
+               "vmsltu.vv	v8, v8, v9\n\t"
                "addiw	a0, a0, 1365\n\t"
+               "slli	a1, a0, 32\n\t"
+               "vsrl.vi	v9, v10, 1\n\t"
+               "add	a0, a0, a1\n\t"
                "vsrl.vi	v10, v8, 1\n\t"
                "vand.vx	v9, v9, a0\n\t"
                "vand.vx	v10, v10, a0\n\t"
