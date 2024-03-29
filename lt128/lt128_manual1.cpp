@@ -71,3 +71,49 @@ void Lt128Manual1<hn::ScalableTag<uint64_t>>(const uint64_t *HWY_RESTRICT a,
                : [a] "r"(a), [b] "r"(b), [r] "r"(r)
                : "memory");
 }
+
+extern "C" {
+uint64_t mask = 0x5555555555555555;
+}
+
+template <>
+void Lt128Manual1WithGlobal<hn::ScalableTag<uint64_t>>(
+    const uint64_t *HWY_RESTRICT a, const uint64_t *HWY_RESTRICT b,
+    uint8_t *HWY_RESTRICT r) {
+  asm volatile("vsetvli	a3, zero, e64, m1, ta, ma\n\t"
+               "vle64.v	v8, (%[a])\n\t"
+               "vle64.v	v9, (%[b])\n\t"
+               "# LLVM-MCA-BEGIN Lt128Manual1WithGlobal-lmul1\n\t"
+               "vmseq.vv	v10, v8, v9\n\t"
+               ".Lpcrel_hi0:\n\t"
+               "auipc       a0, %%pcrel_hi(mask)\n\t"
+               "vmsltu.vv	v8, v8, v9\n\t"
+               // "ld a0, mask\n\t"
+               // "lui	a0, 349525\n\t"
+               "ld a0, %%pcrel_lo(.Lpcrel_hi0)(a0)\n\t"
+               // "addiw	a0, a0, 1365\n\t"
+               // "slli	a1, a0, 32\n\t"
+               "vsrl.vi	v9, v10, 1\n\t"
+               "vsrl.vi	v10, v8, 1\n\t"
+               "vand.vx	v9, v9, a0\n\t"
+               "vand.vx	v10, v10, a0\n\t"
+               "vand.vv	v8, v9, v8\n\t"
+               "vor.vv	v8, v8, v10\n\t"
+               "li	a0, 3\n\t"
+               "vmul.vx	v16, v8, a0\n\t"
+               "# LLVM-MCA-END Lt128Manual1WithGlobal-lmul1\n\t"
+               "li	a0, 7\n\t"
+               "vsetvli	a1, zero, e8, mf8, ta, ma\n\t"
+               "vsm.v	v16, (%[r])\n\t"
+               "bltu	a0, a3, finalWithGlobal\n\t"
+               "li	a0, -1\n\t"
+               "sllw	a0, a0, a3\n\t"
+               "lbu	a1, 0(%[r])\n\t"
+               "not	a0, a0\n\t"
+               "and	a0, a0, a1\n\t"
+               "sb	a0, 0(%[r])\n\t"
+               "finalWithGlobal:\n\t"
+               :
+               : [a] "r"(a), [b] "r"(b), [r] "r"(r), [mask] "r" (mask)
+               : "a3", "memory");
+}
