@@ -11,6 +11,8 @@ int main() {
   CheckLt128(Lt128Highway<>, Lt128Manual1Intrinsics<>);
   CheckLt128(Lt128Highway<>, Lt128Manual2Intrinsics<>);
   CheckLt128(Lt128Highway<>, Lt128Manual1<>);
+  CheckLt128(Lt128Highway<>, Lt128Manual1OptimizeForX280<>);
+  CheckLt128(Lt128Highway<>, Lt128Manual1OptimizeForP670<>);
   CheckLt128(Lt128Highway<>, Lt128Manual1WithGlobal<>);
   CheckLt128(Lt128Highway<>, Lt128Manual2<>);
   CheckMin128(Min128Highway<>, Min128HighwayAsm<>);
