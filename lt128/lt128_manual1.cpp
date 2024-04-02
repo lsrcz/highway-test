@@ -88,18 +88,21 @@ template <>
 void Lt128Manual1OptimizeForX280<hn::ScalableTag<uint64_t>>(
     const uint64_t *HWY_RESTRICT a, const uint64_t *HWY_RESTRICT b,
     uint8_t *HWY_RESTRICT r) {
-  asm volatile(R"(
+  const hn::ScalableTag<uint64_t> d64;
+  auto ar = hn::Load(d64, a);
+  auto br = hn::Load(d64, b);
+  LLVM_MCA_BEGIN("Lt128Manual1OptimizeForX280", ("+vr"(br)), (), decltype(ar));
+  rvv::vmask_t<64> rmask;
+  asm volatile(
+      R"(
                vsetvli	a3, zero, e64, m1, ta, ma
-               vle64.v	v8, (%[a])
-               vle64.v	v9, (%[b])
-               # LLVM-MCA-BEGIN Lt128Manual1-X280-lmul1
                lui	a0, 349525
-               vslide1down.vx    v11, v8, zero
+               vslide1down.vx    v11, %[ar], zero
                addiw	a0, a0, 1365
                slli	a1, a0, 32
-               vslide1down.vx    v12, v9, zero
+               vslide1down.vx    v12, %[br], zero
                add	a0, a0, a1
-               vmsltu.vv	v8, v8, v9
+               vmsltu.vv	v8, %[ar], %[br]
                vmv.v.x v13, a0
                vmseq.vv	v14, v11, v12
                vmsltu.vv	v10, v11, v12
@@ -107,25 +110,15 @@ void Lt128Manual1OptimizeForX280<hn::ScalableTag<uint64_t>>(
                vmand.mm	v10, v10, v13
                vmand.mm	v8, v14, v8
                vmor.mm	v8, v8, v10
-               vadd.vv	v16, v8, v8
-               vmor.mm	v16, v16, v8
-               # LLVM-MCA-END Lt128Manual1-X280-lmul1
-               li	a0, 7
-               vsetvli	a1, zero, e8, mf8, ta, ma
-               vsm.v	v16, (%[r])
-               bltu	a0, a3, final_280
-               li	a0, -1
-               sllw	a0, a0, a3
-               lbu	a1, 0(%[r])
-               not	a0, a0
-               and	a0, a0, a1
-               sb	a0, 0(%[r])
-               final_280:
+               vadd.vv	%[rmask], v8, v8
+               vmor.mm	%[rmask], %[rmask], v8
                )"
-               :
-               : [a] "r"(a), [b] "r"(b), [r] "r"(r), [mask] "r"(mask)
-               : "a0", "a1", "a3", "v8", "v9", "v10", "v11", "v12", "v13",
-                 "v14", "v16", "memory");
+      : [rmask] "=vr"(rmask)
+      : [a] "r"(a), [b] "r"(b), [r] "r"(r), [ar] "vr"(ar), [br] "vr"(br)
+      : "a0", "a1", "a3", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v16",
+        "memory");
+  LLVM_MCA_END("Lt128Manual1OptimizeForX280", ("+vr"(rmask)), (), decltype(ar));
+  hn::StoreMaskBits(d64, rmask, r);
 }
 
 template <>
@@ -144,11 +137,10 @@ void Lt128Manual1OptimizeForP670<hn::ScalableTag<uint64_t>>(
                "vmseq.vv	v14, v11, v12\n\t"
                "add	a0, a0, a1\n\t"
                "vmsltu.vv	v10, v11, v12\n\t"
-               "vand.vx	v14, v14, a0\n\t"
                "vmsltu.vv	v8, v8, v9\n\t"
-               "vand.vx	v10, v10, a0\n\t"
                "vand.vv	v8, v14, v8\n\t"
                "vor.vv	v8, v8, v10\n\t"
+               "vand.vx v8, v8, a0\n\t"
                "vadd.vv	v16, v8, v8\n\t"
                "vor.vv	v16, v16, v8\n\t"
                // "li	a0, 3\n\t"
