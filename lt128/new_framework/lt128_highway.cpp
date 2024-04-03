@@ -24,4 +24,3 @@ Lt128Highway0<vuint64m4_t>(vuint64m4_t ar, vuint64m4_t br, vbool16_t &m);
 
 template __attribute__((noinline)) size_t
 Lt128Highway0<vuint64m8_t>(vuint64m8_t ar, vuint64m8_t br, vbool8_t &m);
-

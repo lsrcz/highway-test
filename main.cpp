@@ -32,14 +32,14 @@ int main() {
                              Lt128HighwayClang19<>);
   CheckLt128Reg<vuint64m8_t>("Highway0", "HighwayClang19", Lt128Highway0<>,
                              Lt128HighwayClang19<>);
-  CheckLt128Reg<vuint64m1_t>("Highway0", "HighwayManualSchedule", Lt128Highway0<>,
-                             Lt128HighwayManualSchedule<>);
-  CheckLt128Reg<vuint64m2_t>("Highway0", "HighwayManualSchedule", Lt128Highway0<>,
-                             Lt128HighwayManualSchedule<>);
-  CheckLt128Reg<vuint64m4_t>("Highway0", "HighwayManualSchedule", Lt128Highway0<>,
-                             Lt128HighwayManualSchedule<>);
-  // CheckLt128Reg<vuint64m8_t>("Highway0", "HighwayManualSchedule", Lt128Highway0<>,
-  //                            Lt128HighwayManualSchedule<>);
+  CheckLt128Reg<vuint64m1_t>("Highway0", "HighwayManualSchedule",
+                             Lt128Highway0<>, Lt128HighwayManualSchedule<>);
+  CheckLt128Reg<vuint64m2_t>("Highway0", "HighwayManualSchedule",
+                             Lt128Highway0<>, Lt128HighwayManualSchedule<>);
+  CheckLt128Reg<vuint64m4_t>("Highway0", "HighwayManualSchedule",
+                             Lt128Highway0<>, Lt128HighwayManualSchedule<>);
+  CheckLt128Reg<vuint64m8_t>("Highway0", "HighwayManualSchedule",
+                             Lt128Highway0<>, Lt128HighwayManualSchedule<>);
   CheckLt128Reg<vuint64m1_t>("Highway0", "X280", Lt128Highway0<>,
                              Lt128OptimizeForX280<>);
   CheckLt128Reg<vuint64m2_t>("Highway0", "X280", Lt128Highway0<>,

@@ -1,6 +1,7 @@
 #include "../lt128.h"
+#include "common.h"
 
-template <typename Vec>
+template <typename Vec, bool kReplicate>
 __attribute__((always_inline)) size_t
 Lt128HighwayManualSchedule124(Vec a, Vec b, MFromV<Vec> &m) {
 
@@ -10,11 +11,12 @@ Lt128HighwayManualSchedule124(Vec a, Vec b, MFromV<Vec> &m) {
   register Vec br asm("v12") = b;
   register MFromV<Vec> rr asm("v24");
   GET_CYCLE(("+vr"(ar), "+vr"(br)), (), begin);
-  LLVM_MCA_BEGIN("Lt128HighwayClang19", ("+vr"(ar), "+vr"(br)), (),
-                 decltype(ar));
-  SET_VL_MAX_TA_MA(("+vr"(ar), "+vr"(br)), (), vl, decltype(ar));
-  asm volatile(
-      R"(
+  LLVM_MCA_BEGIN_WITH_REP(kReplicate, "Lt128HighwayManualSchedule",
+                          ("+vr"(ar), "+vr"(br)), (), decltype(ar));
+  REPEAT_DEFAULT(kReplicate,
+                 SET_VL_MAX_TA_MA(("+vr"(ar), "+vr"(br)), (), vl, decltype(ar));
+                 asm volatile(
+                     R"(
               vmsltu.vv	v0, %[ar], %[br]
               vmv.v.i	v16, 0
               vid.v	v20
@@ -29,41 +31,33 @@ Lt128HighwayManualSchedule124(Vec a, Vec b, MFromV<Vec> &m) {
               vslide1down.vx	v24, v24, zero, v0.t
               vmsne.vi	%[rr], v24, 0
       )"
-      : [rr] "=vr"(rr), [ar] "+vr"(ar), [br] "+vr"(br)
-      :
-      : "v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v16", "v17", "v18",
-        "v19", "v20", "v21", "v22", "v23", "v25", "v26", "v27", "v28", "v29",
-        "v30", "v31");
-  LLVM_MCA_END("Lt128HighwayClang19", ("+vr"(rr)), (), decltype(ar));
+                     : [rr] "=vr"(rr), [ar] "+vr"(ar), [br] "+vr"(br)
+                     :
+                     : "v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v16",
+                       "v17", "v18", "v19", "v20", "v21", "v22", "v23", "v25",
+                       "v26", "v27", "v28", "v29", "v30", "v31");
+                 asm volatile(""
+                              : [ar] "=vr"(ar), [br] "=vr"(br)::"memory"););
+  LLVM_MCA_END_WITH_REP(kReplicate, "Lt128HighwayManualSchedule", ("+vr"(rr)),
+                        (), decltype(ar));
   GET_CYCLE(("+vr"(rr)), (), end);
   m = rr;
   return end - begin;
 }
 
-template <>
-__attribute__((noinline)) size_t Lt128HighwayManualSchedule<vuint64m1_t>(
-    vuint64m1_t a, vuint64m1_t b, vbool64_t &m) {
-  return Lt128HighwayManualSchedule124<vuint64m1_t>(a, b, m);
-}
+#define SPECIALIZE(T, func)                                                    \
+  template <>                                                                  \
+  __attribute__((noinline)) size_t Lt128HighwayManualSchedule<T, true>(        \
+      T ar, T br, MFromV<T> & m) {                                             \
+    return func<T, true>(ar, br, m);                                           \
+  }                                                                            \
+  template <>                                                                  \
+  __attribute__((noinline)) size_t Lt128HighwayManualSchedule<T, false>(       \
+      T ar, T br, MFromV<T> & m) {                                             \
+    return func<T, false>(ar, br, m);                                          \
+  }
 
-template <>
-__attribute__((noinline)) size_t Lt128HighwayManualSchedule<vuint64m2_t>(
-    vuint64m2_t a, vuint64m2_t b, vbool32_t &m) {
-  return Lt128HighwayManualSchedule124<vuint64m2_t>(a, b, m);
-}
-
-template <>
-__attribute__((noinline)) size_t Lt128HighwayManualSchedule<vuint64m4_t>(
-    vuint64m4_t a, vuint64m4_t b, vbool16_t &m) {
-  return Lt128HighwayManualSchedule124<vuint64m4_t>(a, b, m);
-}
-//
-// template __attribute__((noinline)) size_t
-// Lt128HighwayClang19<vuint64m2_t>(vuint64m2_t a, vuint64m2_t b, vbool32_t &m);
-//
-// template __attribute__((noinline)) size_t
-// Lt128HighwayClang19<vuint64m4_t>(vuint64m4_t a, vuint64m4_t b, vbool16_t &m);
-//
-// template __attribute__((noinline)) size_t
-// Lt128HighwayClang19<vuint64m8_t>(vuint64m8_t a, vuint64m8_t b, vbool8_t &m);
-//
+SPECIALIZE(vuint64m1_t, Lt128HighwayManualSchedule124)
+SPECIALIZE(vuint64m2_t, Lt128HighwayManualSchedule124)
+SPECIALIZE(vuint64m4_t, Lt128HighwayManualSchedule124)
+SPECIALIZE(vuint64m8_t, Lt128HighwayClang19)

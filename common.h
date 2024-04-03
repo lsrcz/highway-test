@@ -186,6 +186,25 @@ template <bool flag = false> void static_unsupported_type() {
 #define LLVM_MCA_END(name, pseudo_output_dep, pseudo_input_dep, ty)            \
   LLVM_MCA("LLVM-MCA-END", name, pseudo_output_dep, pseudo_input_dep, ty)
 
+#define LLVM_MCA_BEGIN_WITH_REP(do_replicate, name, pseudo_output_dep,         \
+                                pseudo_input_dep, ty)                          \
+  if constexpr (do_replicate) {                                                \
+    LLVM_MCA("LLVM-MCA-BEGIN", name "-rep", pseudo_output_dep,                 \
+             pseudo_input_dep, ty);                                            \
+  } else {                                                                     \
+    LLVM_MCA("LLVM-MCA-BEGIN", name, pseudo_output_dep, pseudo_input_dep, ty); \
+  }                                                                            \
+  static_assert(true, "Require trailing semicolon.")
+#define LLVM_MCA_END_WITH_REP(do_replicate, name, pseudo_output_dep,           \
+                              pseudo_input_dep, ty)                            \
+  if constexpr (do_replicate) {                                                \
+    LLVM_MCA("LLVM-MCA-END", name "-rep", pseudo_output_dep, pseudo_input_dep, \
+             ty);                                                              \
+  } else {                                                                     \
+    LLVM_MCA("LLVM-MCA-END", name, pseudo_output_dep, pseudo_input_dep, ty);   \
+  }                                                                            \
+  static_assert(true, "Require trailing semicolon.")
+
 #define GET_CYCLE(pseudo_output_dep, pseudo_input_dep, var)                    \
   asm volatile("fence\n\trdcycle %[cyclevar]"                                  \
                : EXPAND_LIST(CONS([cyclevar] "=r"(var), pseudo_output_dep))    \
@@ -270,8 +289,18 @@ template <bool flag = false> void static_unsupported_type() {
 #define REPEAT_64(X) REPEAT_32(X) REPEAT_32(X)
 #define REPEAT_128(X) REPEAT_64(X) REPEAT_64(X)
 
-#define REPEAT_N(N, X) REPEAT_##N(X)
+#define REPEAT_N0(N, X) REPEAT_##N(X)
+
+#define REPEAT_N(N, X) REPEAT_N0(N, X)
 
 #define NUM_REPEAT 2
+
+#define REPEAT_DEFAULT(do_replicate, X)                                        \
+  if constexpr (do_replicate) {                                                \
+    REPEAT_N(NUM_REPEAT, X);                                                   \
+  } else {                                                                     \
+    X;                                                                         \
+  }                                                                            \
+  static_assert(true, "Require trailing semicolon.")
 
 #endif

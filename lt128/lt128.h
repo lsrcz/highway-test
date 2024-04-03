@@ -10,10 +10,10 @@ namespace hn = hwy::HWY_NAMESPACE;
 template <typename Vec>
 __attribute__((noinline)) size_t Lt128Highway0(Vec, Vec, MFromV<Vec> &);
 
-template <typename Vec>
+template <typename Vec, bool kReplicate = false>
 __attribute__((noinline)) size_t Lt128HighwayClang19(Vec, Vec, MFromV<Vec> &);
 
-template <typename Vec>
+template <typename Vec, bool kReplicate = false>
 __attribute__((noinline)) size_t Lt128HighwayManualSchedule(Vec, Vec,
                                                             MFromV<Vec> &);
 
@@ -39,15 +39,15 @@ void Lt128Manual1OptimizeForX280(const uint64_t *HWY_RESTRICT a,
                                  const uint64_t *HWY_RESTRICT b,
                                  uint8_t *HWY_RESTRICT r);
 
-template <typename Vec>
+template <typename Vec, bool kReplicate = false>
 __attribute__((noinline)) size_t Lt128OptimizeForX280(Vec a, Vec b,
                                                       MFromV<Vec> &m);
 
-template <typename Vec>
+template <typename Vec, bool kReplicate = false>
 __attribute__((noinline)) size_t
 Lt128OptimizeForX280ChangeVType(Vec a, Vec b, MFromV<Vec> &m);
 
-template <typename Vec>
+template <typename Vec, bool kReplicate = false>
 __attribute__((noinline)) size_t Lt128OptimizeForX280UseShift(Vec a, Vec b,
                                                               MFromV<Vec> &m);
 
