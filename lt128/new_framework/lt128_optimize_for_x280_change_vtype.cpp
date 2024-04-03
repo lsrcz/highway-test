@@ -1,5 +1,4 @@
-#include "lt128.h"
-#include <cstdio>
+#include "../lt128.h"
 
 template <typename Vec>
 __attribute__((noinline)) size_t

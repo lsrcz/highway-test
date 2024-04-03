@@ -261,4 +261,17 @@ template <bool flag = false> void static_unsupported_type() {
   }                                                                            \
   static_assert(true, "Require trailing semicolon.")
 
+#define REPEAT_1(X) X
+#define REPEAT_2(X) X X
+#define REPEAT_4(X) REPEAT_2(X) REPEAT_2(X)
+#define REPEAT_8(X) REPEAT_4(X) REPEAT_4(X)
+#define REPEAT_16(X) REPEAT_8(X) REPEAT_8(X)
+#define REPEAT_32(X) REPEAT_16(X) REPEAT_16(X)
+#define REPEAT_64(X) REPEAT_32(X) REPEAT_32(X)
+#define REPEAT_128(X) REPEAT_64(X) REPEAT_64(X)
+
+#define REPEAT_N(N, X) REPEAT_##N(X)
+
+#define NUM_REPEAT 2
+
 #endif

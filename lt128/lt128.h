@@ -10,6 +10,13 @@ namespace hn = hwy::HWY_NAMESPACE;
 template <typename Vec>
 __attribute__((noinline)) size_t Lt128Highway0(Vec, Vec, MFromV<Vec> &);
 
+template <typename Vec>
+__attribute__((noinline)) size_t Lt128HighwayClang19(Vec, Vec, MFromV<Vec> &);
+
+template <typename Vec>
+__attribute__((noinline)) size_t Lt128HighwayManualSchedule(Vec, Vec,
+                                                            MFromV<Vec> &);
+
 template <typename tag = hn::ScalableTag<uint64_t>>
 void Lt128Highway(const uint64_t *HWY_RESTRICT a,
                   const uint64_t *HWY_RESTRICT b, uint8_t *HWY_RESTRICT r);
@@ -76,7 +83,7 @@ template <typename Vec>
 void CheckLt128Reg(const std::string &name0, const std::string &name1,
                    size_t (*f0)(Vec, Vec, MFromV<Vec> &),
                    size_t (*f1)(Vec, Vec, MFromV<Vec> &),
-                   int printCycleIter = 5) {
+                   int printCycleIter = -1) {
   using D = hn::DFromV<Vec>;
   auto numElem = hn::Lanes(D());
   printf("Comparing %s and %s, num_elem = %zu\n", name0.c_str(), name1.c_str(),
@@ -112,7 +119,7 @@ void CheckLt128Reg(const std::string &name0, const std::string &name1,
         mismatch = true;
       }
       if (mismatch) {
-        printf("Raw\ta\tb\tr0\tr1:\n");
+        printf("a\tb\tr0\tr1\tidx:\n");
         for (int i = 0; i < numElem; ++i) {
           printf("%lu\t%lu\t%u\t%u\t%d\n", a[i], b[i], r0[i / 8], r1[i / 8],
                  i / 8);
