@@ -24,44 +24,30 @@ int main() {
   CheckMin128(Min128Highway<>, Min128HighwayAsm<>);
   CheckMin128(Min128Highway<>, Min128HighwayAsmImmOddEven<>);
 
-  CheckLt128Reg<vuint64m1_t>("Highway0", "HighwayClang19", Lt128Highway0<>,
-                             Lt128HighwayClang19<>);
-  CheckLt128Reg<vuint64m2_t>("Highway0", "HighwayClang19", Lt128Highway0<>,
-                             Lt128HighwayClang19<>);
-  CheckLt128Reg<vuint64m4_t>("Highway0", "HighwayClang19", Lt128Highway0<>,
-                             Lt128HighwayClang19<>);
-  CheckLt128Reg<vuint64m8_t>("Highway0", "HighwayClang19", Lt128Highway0<>,
-                             Lt128HighwayClang19<>);
-  CheckLt128Reg<vuint64m1_t>("Highway0", "HighwayManualSchedule",
-                             Lt128Highway0<>, Lt128HighwayManualSchedule<>);
-  CheckLt128Reg<vuint64m2_t>("Highway0", "HighwayManualSchedule",
-                             Lt128Highway0<>, Lt128HighwayManualSchedule<>);
-  CheckLt128Reg<vuint64m4_t>("Highway0", "HighwayManualSchedule",
-                             Lt128Highway0<>, Lt128HighwayManualSchedule<>);
-  CheckLt128Reg<vuint64m8_t>("Highway0", "HighwayManualSchedule",
-                             Lt128Highway0<>, Lt128HighwayManualSchedule<>);
-  CheckLt128Reg<vuint64m1_t>("Highway0", "X280", Lt128Highway0<>,
-                             Lt128OptimizeForX280<>);
-  CheckLt128Reg<vuint64m2_t>("Highway0", "X280", Lt128Highway0<>,
-                             Lt128OptimizeForX280<>);
-  CheckLt128Reg<vuint64m4_t>("Highway0", "X280", Lt128Highway0<>,
-                             Lt128OptimizeForX280<>);
-  CheckLt128Reg<vuint64m8_t>("Highway0", "X280", Lt128Highway0<>,
-                             Lt128OptimizeForX280<>);
-  CheckLt128Reg<vuint64m1_t>("Highway0", "X280ChangeVType", Lt128Highway0<>,
-                             Lt128OptimizeForX280ChangeVType<>);
-  CheckLt128Reg<vuint64m2_t>("Highway0", "X280ChangeVType", Lt128Highway0<>,
-                             Lt128OptimizeForX280ChangeVType<>);
-  CheckLt128Reg<vuint64m4_t>("Highway0", "X280ChangeVType", Lt128Highway0<>,
-                             Lt128OptimizeForX280ChangeVType<>);
-  CheckLt128Reg<vuint64m8_t>("Highway0", "X280ChangeVType", Lt128Highway0<>,
-                             Lt128OptimizeForX280ChangeVType<>);
-  CheckLt128Reg<vuint64m1_t>("Highway0", "X280UseShift", Lt128Highway0<>,
-                             Lt128OptimizeForX280UseShift<>);
-  CheckLt128Reg<vuint64m2_t>("Highway0", "X280UseShift", Lt128Highway0<>,
-                             Lt128OptimizeForX280UseShift<>);
-  CheckLt128Reg<vuint64m4_t>("Highway0", "X280UseShift", Lt128Highway0<>,
-                             Lt128OptimizeForX280UseShift<>);
-  CheckLt128Reg<vuint64m8_t>("Highway0", "X280UseShift", Lt128Highway0<>,
-                             Lt128OptimizeForX280UseShift<>);
+  CheckLt128RegAllTypes<Lt128Highway0Obj, Lt128HighwayClang19Obj<false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj, Lt128HighwayManualScheduleObj<false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj, Lt128OptimizeForX280Obj<true, false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj, Lt128OptimizeForX280Obj<false, false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj,
+                        Lt128OptimizeForX280ChangeVTypeObj<true, false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj,
+                        Lt128OptimizeForX280ChangeVTypeObj<false, false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj,
+                        Lt128OptimizeForX280UseShiftObj<true, false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj,
+                        Lt128OptimizeForX280UseShiftObj<false, false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+
+  uint64_t data[1024];
+  // List all the types in the template argument.
+  RunAndPrintCyclesObjAllTemplatesTypes<false, vuint64m1_t, vuint64m2_t,
+                                        vuint64m4_t, vuint64m8_t>(data,
+                                                                  data + 1);
 }

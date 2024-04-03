@@ -1,7 +1,7 @@
 #include "../lt128.h"
 #include "common.h"
 
-template <typename Vec, bool kReplicate>
+template <typename Vec, bool kUseMul, bool kReplicate>
 __attribute__((noinline)) size_t
 Lt128OptimizeForX280ChangeVType(Vec a, Vec b, MFromV<Vec> &m) {
   register size_t begin asm("t0"), end asm("t1");
@@ -39,16 +39,27 @@ Lt128OptimizeForX280ChangeVType(Vec a, Vec b, MFromV<Vec> &m) {
                vmv.v.x v24, %[t3]
                vand.vv	v17, %[seqs], %[sltu]
                vor.vv	v16, v17, %[sltus]
-               vand.vv	v16, v16, v24
-               vadd.vv	v24, v16, v16
-               vor.vv	%[r], v24, v16
+               vand.vv	%[r], v16, v24
                )"
           : [r] "=vr"(r)
           : [sltu] "vr"(sltu), [seqs] "vr"(seqs), [sltus] "vr"(sltus),
             [t3] "r"(t3)
           : "v24", "v25", "v26", "v27", "v28", "v29", "v30", "v31", "memory");
-      asm volatile(""
-                   : [ar] "=vr"(ar), [br] "=vr"(br)::"memory"););
+      if (kUseMul) {
+        asm volatile(R"(
+               li %[t3], 3
+               vmul.vx %[r], %[r], %[t3]
+               )"
+                     : [r] "+vr"(r)
+                     : [t3] "r"(t3));
+      } else {
+        asm volatile(R"(
+               vadd.vv  v24, %[r], %[r]
+               vor.vv  %[r], v24, %[r]
+                 )"
+                     : [r] "+vr"(r)::"v24");
+      } asm volatile(""
+                     : [ar] "=vr"(ar), [br] "=vr"(br)::"memory"););
   LLVM_MCA_END_WITH_REP(kReplicate, "Lt128OptimizeForX280ChangeVType",
                         ("+vr"(r)), (), decltype(ar));
   GET_CYCLE(("+vr"(r)), (), end);
@@ -58,11 +69,17 @@ Lt128OptimizeForX280ChangeVType(Vec a, Vec b, MFromV<Vec> &m) {
 
 #define INSTANTIATE(T)                                                         \
   template __attribute__((noinline)) size_t                                    \
-  Lt128OptimizeForX280ChangeVType<T, true>(T ar, T br, MFromV<T> & m);         \
+  Lt128OptimizeForX280ChangeVType<T, true, true>(T ar, T br, MFromV<T> & m);   \
   template __attribute__((noinline)) size_t                                    \
-  Lt128OptimizeForX280ChangeVType<T, false>(T ar, T br, MFromV<T> & m);
+  Lt128OptimizeForX280ChangeVType<T, false, true>(T ar, T br, MFromV<T> & m);  \
+  template __attribute__((noinline)) size_t                                    \
+  Lt128OptimizeForX280ChangeVType<T, true, false>(T ar, T br, MFromV<T> & m);  \
+  template __attribute__((noinline)) size_t                                    \
+  Lt128OptimizeForX280ChangeVType<T, false, false>(T ar, T br, MFromV<T> & m);
 
 INSTANTIATE(vuint64m1_t)
 INSTANTIATE(vuint64m2_t)
 INSTANTIATE(vuint64m4_t)
 INSTANTIATE(vuint64m8_t)
+
+#undef INSTANTIATE

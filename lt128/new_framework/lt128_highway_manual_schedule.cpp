@@ -61,3 +61,5 @@ SPECIALIZE(vuint64m1_t, Lt128HighwayManualSchedule124)
 SPECIALIZE(vuint64m2_t, Lt128HighwayManualSchedule124)
 SPECIALIZE(vuint64m4_t, Lt128HighwayManualSchedule124)
 SPECIALIZE(vuint64m8_t, Lt128HighwayClang19)
+
+#undef SPECIALIZE

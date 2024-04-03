@@ -102,3 +102,5 @@ SPECIALIZE(vuint64m1_t, 12)
 SPECIALIZE(vuint64m2_t, 12)
 SPECIALIZE(vuint64m4_t, 48)
 SPECIALIZE(vuint64m8_t, 48)
+
+#undef SPECIALIZE
