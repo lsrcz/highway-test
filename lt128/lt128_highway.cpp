@@ -1,9 +1,8 @@
 #include "lt128.h"
 
-template <typename tag>
-__attribute__((noinline)) size_t Lt128Highway0(tag d, hn::VFromD<tag> ar,
-                                               hn::VFromD<tag> br,
-                                               hn::MFromD<tag> &m) {
+template <typename Vec>
+__attribute__((noinline)) size_t Lt128Highway0(Vec ar, Vec br, MFromV<Vec> &m) {
+  auto d = hn::DFromV<Vec>{};
   size_t begin, end;
   GET_CYCLE(("+vr"(ar), "+vr"(br)), (), begin);
   LLVM_MCA_BEGIN("Lt128Highway0", ("+vr"(ar), "+vr"(br)), (), decltype(ar));
@@ -14,28 +13,17 @@ __attribute__((noinline)) size_t Lt128Highway0(tag d, hn::VFromD<tag> ar,
   return end - begin;
 }
 
-template __attribute__((noinline)) size_t
-Lt128Highway0<hn::ScalableTag<uint64_t>>(hn::ScalableTag<uint64_t> d,
-                                         const rvv::vreg_t<uint64_t, 64> ar,
-                                         const rvv::vreg_t<uint64_t, 64> br,
-                                         rvv::vmask_t<64> &m);
+template __attribute__((noinline)) size_t Lt128Highway0<vuint64m1_t>(
+    const vuint64m1_t ar, const vuint64m1_t br, vbool64_t &m);
+
+template __attribute__((noinline)) size_t Lt128Highway0<vuint64m2_t>(
+    const vuint64m2_t ar, const vuint64m2_t br, vbool32_t &m);
 
 template __attribute__((noinline)) size_t
-Lt128Highway0<hn::Twice<hn::ScalableTag<uint64_t>>>(
-    hn::Twice<hn::ScalableTag<uint64_t>> d, const rvv::vreg_t<uint64_t, 32> ar,
-    const rvv::vreg_t<uint64_t, 32> br, rvv::vmask_t<32> &m);
+Lt128Highway0<vuint64m4_t>(vuint64m4_t ar, vuint64m4_t br, vbool16_t &m);
 
 template __attribute__((noinline)) size_t
-Lt128Highway0<hn::Twice<hn::Twice<hn::ScalableTag<uint64_t>>>>(
-    hn::Twice<hn::Twice<hn::ScalableTag<uint64_t>>> d,
-    rvv::vreg_t<uint64_t, 16> ar, rvv::vreg_t<uint64_t, 16> br,
-    rvv::vmask_t<16> &m);
-
-template __attribute__((noinline)) size_t
-Lt128Highway0<hn::Twice<hn::Twice<hn::Twice<hn::ScalableTag<uint64_t>>>>>(
-    hn::Twice<hn::Twice<hn::Twice<hn::ScalableTag<uint64_t>>>> d,
-    rvv::vreg_t<uint64_t, 8> ar, rvv::vreg_t<uint64_t, 8> br,
-    rvv::vmask_t<8> &m);
+Lt128Highway0<vuint64m8_t>(vuint64m8_t ar, vuint64m8_t br, vbool8_t &m);
 
 template <typename tag>
 void Lt128Highway(const uint64_t *HWY_RESTRICT a,

@@ -2,14 +2,13 @@
 #include <cstdio>
 #include <cstring>
 #include <functional>
+#include <hwy/highway.h>
 #include <string>
 
 namespace hn = hwy::HWY_NAMESPACE;
 
-template <typename tag = hn::ScalableTag<uint64_t>>
-__attribute__((noinline)) size_t Lt128Highway0(tag, hn::VFromD<tag>,
-                                               hn::VFromD<tag>,
-                                               hn::MFromD<tag> &);
+template <typename Vec>
+__attribute__((noinline)) size_t Lt128Highway0(Vec, Vec, MFromV<Vec> &);
 
 template <typename tag = hn::ScalableTag<uint64_t>>
 void Lt128Highway(const uint64_t *HWY_RESTRICT a,
@@ -33,18 +32,17 @@ void Lt128Manual1OptimizeForX280(const uint64_t *HWY_RESTRICT a,
                                  const uint64_t *HWY_RESTRICT b,
                                  uint8_t *HWY_RESTRICT r);
 
-template <typename tag = hn::ScalableTag<uint64_t>>
-__attribute__((noinline)) size_t Lt128OptimizeForX280(tag, hn::VFromD<tag>,
-                                                      hn::VFromD<tag>,
-                                                      hn::MFromD<tag> &);
+template <typename Vec>
+__attribute__((noinline)) size_t Lt128OptimizeForX280(Vec a, Vec b,
+                                                      MFromV<Vec> &m);
 
-template <typename tag = hn::ScalableTag<uint64_t>>
-__attribute__((noinline)) size_t Lt128OptimizeForX280ChangeVType(
-    tag, hn::VFromD<tag>, hn::VFromD<tag>, hn::MFromD<tag> &);
+template <typename Vec>
+__attribute__((noinline)) size_t
+Lt128OptimizeForX280ChangeVType(Vec a, Vec b, MFromV<Vec> &m);
 
-template <typename tag = hn::ScalableTag<uint64_t>>
-__attribute__((noinline)) size_t Lt128OptimizeForX280UseShift(
-    tag, hn::VFromD<tag>, hn::VFromD<tag>, hn::MFromD<tag> &);
+template <typename Vec>
+__attribute__((noinline)) size_t Lt128OptimizeForX280UseShift(Vec a, Vec b,
+                                                              MFromV<Vec> &m);
 
 template <typename tag = hn::ScalableTag<uint64_t>>
 void Lt128Manual1OptimizeForP670(const uint64_t *HWY_RESTRICT a,
@@ -74,14 +72,13 @@ void CheckLt128(
     std::function<void(const uint64_t *, const uint64_t *, uint8_t *)> f0,
     std::function<void(const uint64_t *, const uint64_t *, uint8_t *)> f1);
 
-template <typename tag = hn::ScalableTag<uint64_t>>
+template <typename Vec>
 void CheckLt128Reg(const std::string &name0, const std::string &name1,
-                   size_t (*f0)(tag, hn::VFromD<tag>, hn::VFromD<tag>,
-                                hn::MFromD<tag> &),
-                   size_t (*f1)(tag, hn::VFromD<tag>, hn::VFromD<tag>,
-                                hn::MFromD<tag> &),
+                   size_t (*f0)(Vec, Vec, MFromV<Vec> &),
+                   size_t (*f1)(Vec, Vec, MFromV<Vec> &),
                    int printCycleIter = 5) {
-  auto numElem = hn::Lanes(tag());
+  using D = hn::DFromV<Vec>;
+  auto numElem = hn::Lanes(D());
   printf("Comparing %s and %s, num_elem = %zu\n", name0.c_str(), name1.c_str(),
          numElem);
   for (int i = 0; i < 100; ++i) {
@@ -95,13 +92,13 @@ void CheckLt128Reg(const std::string &name0, const std::string &name1,
       a[i] = rand() % 100;
       b[i] = rand() % 100;
     }
-    tag d;
+    D d;
     auto ar = hn::Load(d, a);
     auto br = hn::Load(d, b);
-    hn::MFromD<tag> mr0;
-    hn::MFromD<tag> mr1;
-    size_t cycle_f0 = f0(d, ar, br, mr0);
-    size_t cycle_f1 = f1(d, ar, br, mr1);
+    hn::MFromD<D> mr0;
+    hn::MFromD<D> mr1;
+    size_t cycle_f0 = f0(ar, br, mr0);
+    size_t cycle_f1 = f1(ar, br, mr1);
     hn::StoreMaskBits(d, mr0, r0);
     hn::StoreMaskBits(d, mr1, r1);
     if (i <= printCycleIter)

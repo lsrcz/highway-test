@@ -23,28 +23,29 @@ int main() {
   CheckLt128(Lt128Highway<>, Lt128Manual2<>);
   CheckMin128(Min128Highway<>, Min128HighwayAsm<>);
   CheckMin128(Min128Highway<>, Min128HighwayAsmImmOddEven<>);
-  CheckLt128Reg<M1Tag>("Highway0", "X280", Lt128Highway0<>,
-                       Lt128OptimizeForX280<>);
-  CheckLt128Reg<M2Tag>("Highway0", "X280", Lt128Highway0<M2Tag>,
-                       Lt128OptimizeForX280<M2Tag>);
-  CheckLt128Reg<M4Tag>("Highway0", "X280", Lt128Highway0<M4Tag>,
-                       Lt128OptimizeForX280<M4Tag>);
-  CheckLt128Reg<M8Tag>("Highway0", "X280", Lt128Highway0<M8Tag>,
-                       Lt128OptimizeForX280<M8Tag>);
-  CheckLt128Reg<M1Tag>("Highway0", "X280ChangeVType", Lt128Highway0<>,
-                       Lt128OptimizeForX280ChangeVType<>);
-  CheckLt128Reg<M2Tag>("Highway0", "X280ChangeVType", Lt128Highway0<M2Tag>,
-                       Lt128OptimizeForX280ChangeVType<M2Tag>);
-  CheckLt128Reg<M4Tag>("Highway0", "X280ChangeVType", Lt128Highway0<M4Tag>,
-                       Lt128OptimizeForX280ChangeVType<M4Tag>);
-  CheckLt128Reg<M8Tag>("Highway0", "X280ChangeVType", Lt128Highway0<M8Tag>,
-                       Lt128OptimizeForX280ChangeVType<M8Tag>);
-  CheckLt128Reg<M1Tag>("Highway0", "X280UseShift", Lt128Highway0<>,
-                       Lt128OptimizeForX280UseShift<>);
-  CheckLt128Reg<M2Tag>("Highway0", "X280UseShift", Lt128Highway0<M2Tag>,
-                       Lt128OptimizeForX280UseShift<M2Tag>);
-  CheckLt128Reg<M4Tag>("Highway0", "X280UseShift", Lt128Highway0<M4Tag>,
-                       Lt128OptimizeForX280UseShift<M4Tag>);
-  CheckLt128Reg<M8Tag>("Highway0", "X280UseShift", Lt128Highway0<M8Tag>,
-                       Lt128OptimizeForX280UseShift<M8Tag>);
+
+  CheckLt128Reg<vuint64m1_t>("Highway0", "X280", Lt128Highway0<>,
+                             Lt128OptimizeForX280<>);
+  CheckLt128Reg<vuint64m2_t>("Highway0", "X280", Lt128Highway0<>,
+                             Lt128OptimizeForX280<>);
+  CheckLt128Reg<vuint64m4_t>("Highway0", "X280", Lt128Highway0<>,
+                             Lt128OptimizeForX280<>);
+  CheckLt128Reg<vuint64m8_t>("Highway0", "X280", Lt128Highway0<>,
+                             Lt128OptimizeForX280<>);
+  CheckLt128Reg<vuint64m1_t>("Highway0", "X280ChangeVType", Lt128Highway0<>,
+                             Lt128OptimizeForX280ChangeVType<>);
+  CheckLt128Reg<vuint64m2_t>("Highway0", "X280ChangeVType", Lt128Highway0<>,
+                             Lt128OptimizeForX280ChangeVType<>);
+  CheckLt128Reg<vuint64m4_t>("Highway0", "X280ChangeVType", Lt128Highway0<>,
+                             Lt128OptimizeForX280ChangeVType<>);
+  CheckLt128Reg<vuint64m8_t>("Highway0", "X280ChangeVType", Lt128Highway0<>,
+                             Lt128OptimizeForX280ChangeVType<>);
+  CheckLt128Reg<vuint64m1_t>("Highway0", "X280UseShift", Lt128Highway0<>,
+                             Lt128OptimizeForX280UseShift<>);
+  CheckLt128Reg<vuint64m2_t>("Highway0", "X280UseShift", Lt128Highway0<>,
+                             Lt128OptimizeForX280UseShift<>);
+  CheckLt128Reg<vuint64m4_t>("Highway0", "X280UseShift", Lt128Highway0<>,
+                             Lt128OptimizeForX280UseShift<>);
+  CheckLt128Reg<vuint64m8_t>("Highway0", "X280UseShift", Lt128Highway0<>,
+                             Lt128OptimizeForX280UseShift<>);
 }
