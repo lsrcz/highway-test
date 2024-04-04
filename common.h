@@ -216,22 +216,22 @@ template <bool flag = false> void static_unsupported_type() {
     asm volatile("vsetvli %[vlreg], zero, e64, m1, ta, ma"                     \
                  : EXPAND_LIST(CONS([vlreg] "=r"(vl), pseudo_output_dep))      \
                  : EXPAND_LIST(pseudo_input_dep)                               \
-                 : "memory");                                                  \
+                 : "vl", "memory");                                                  \
   } else if constexpr (lmul<ty> == LMul::kM2) {                                \
     asm volatile("vsetvli %[vlreg], zero, e64, m2, ta, ma"                     \
                  : EXPAND_LIST(CONS([vlreg] "=r"(vl), pseudo_output_dep))      \
                  : EXPAND_LIST(pseudo_input_dep)                               \
-                 : "memory");                                                  \
+                 : "vl", "memory");                                                  \
   } else if constexpr (lmul<ty> == LMul::kM4) {                                \
     asm volatile("vsetvli %[vlreg], zero, e64, m4, ta, ma"                     \
                  : EXPAND_LIST(CONS([vlreg] "=r"(vl), pseudo_output_dep))      \
                  : EXPAND_LIST(pseudo_input_dep)                               \
-                 : "memory");                                                  \
+                 : "vl", "memory");                                                  \
   } else if constexpr (lmul<ty> == LMul::kM8) {                                \
     asm volatile("vsetvli %[vlreg], zero, e64, m8, ta, ma"                     \
                  : EXPAND_LIST(CONS([vlreg] "=r"(vl), pseudo_output_dep))      \
                  : EXPAND_LIST(pseudo_input_dep)                               \
-                 : "memory");                                                  \
+                 : "vl", "memory");                                                  \
   } else {                                                                     \
     static_unsupported_lmul();                                                 \
   }                                                                            \
@@ -242,27 +242,27 @@ template <bool flag = false> void static_unsupported_type() {
     asm volatile("vsetvli %[vlreg], zero, e8, mf2, ta, ma"                     \
                  : EXPAND_LIST(CONS([vlreg] "=r"(vl), pseudo_output_dep))      \
                  : EXPAND_LIST(pseudo_input_dep)                               \
-                 : "memory");                                                  \
+                 : "vl", "memory");                                                  \
   } else if constexpr (lmul<ty> == LMul::kM1) {                                \
     asm volatile("vsetvli %[vlreg], zero, e8, m1, ta, ma"                      \
                  : EXPAND_LIST(CONS([vlreg] "=r"(vl), pseudo_output_dep))      \
                  : EXPAND_LIST(pseudo_input_dep)                               \
-                 : "memory");                                                  \
+                 : "vl", "memory");                                                  \
   } else if constexpr (lmul<ty> == LMul::kM2) {                                \
     asm volatile("vsetvli %[vlreg], zero, e8, m2, ta, ma"                      \
                  : EXPAND_LIST(CONS([vlreg] "=r"(vl), pseudo_output_dep))      \
                  : EXPAND_LIST(pseudo_input_dep)                               \
-                 : "memory");                                                  \
+                 : "vl", "memory");                                                  \
   } else if constexpr (lmul<ty> == LMul::kM4) {                                \
     asm volatile("vsetvli %[vlreg], zero, e8, m4, ta, ma"                      \
                  : EXPAND_LIST(CONS([vlreg] "=r"(vl), pseudo_output_dep))      \
                  : EXPAND_LIST(pseudo_input_dep)                               \
-                 : "memory");                                                  \
+                 : "vl", "memory");                                                  \
   } else if constexpr (lmul<ty> == LMul::kM8) {                                \
     asm volatile("vsetvli %[vlreg], zero, e8, m8, ta, ma"                      \
                  : EXPAND_LIST(CONS([vlreg] "=r"(vl), pseudo_output_dep))      \
                  : EXPAND_LIST(pseudo_input_dep)                               \
-                 : "memory");                                                  \
+                 : "vl", "memory");                                                  \
   } else {                                                                     \
     static_unsupported_lmul();                                                 \
   }                                                                            \
@@ -293,7 +293,7 @@ template <bool flag = false> void static_unsupported_type() {
 
 #define REPEAT_N(N, X) REPEAT_N0(N, X)
 
-#define NUM_REPEAT 2
+#define NUM_REPEAT 4
 
 #define REPEAT_DEFAULT(do_replicate, X)                                        \
   if constexpr (do_replicate) {                                                \
