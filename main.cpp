@@ -44,6 +44,16 @@ int main() {
   CheckLt128RegAllTypes<Lt128Highway0Obj,
                         Lt128OptimizeForX280UseShiftObj<false, false>,
                         vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj,
+                        Lt128OptimizeForX280UseAddObj<true, false>, vuint64m1_t,
+                        vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj,
+                        Lt128OptimizeForX280UseAddObj<false, false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj, Lt128SynthesizedObj<false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
+  CheckLt128RegAllTypes<Lt128Highway0Obj, Lt128Synthesized2Obj<false>,
+                        vuint64m1_t, vuint64m2_t, vuint64m4_t, vuint64m8_t>();
 
   uint64_t data[1024];
   // List all the types in the template argument.

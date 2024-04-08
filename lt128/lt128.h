@@ -114,6 +114,42 @@ struct Lt128OptimizeForX280UseShiftObj {
   }
 };
 
+template <typename Vec, bool kUseMul = false, bool kReplicate = false>
+__attribute__((noinline)) size_t Lt128OptimizeForX280UseAdd(Vec a, Vec b,
+                                                            MFromV<Vec> &m);
+
+template <bool kUseMul, bool kReplicate> struct Lt128OptimizeForX280UseAddObj {
+  template <typename Vec> size_t operator()(Vec a, Vec b, MFromV<Vec> &m) {
+    return Lt128OptimizeForX280UseAdd<Vec, kUseMul, kReplicate>(a, b, m);
+  }
+
+  const char *Name() const {
+    NAME_USEMUL_REPLICATE("Lt128OptimizeForX280UseAdd", kUseMul, kReplicate);
+  }
+};
+
+template <typename Vec, bool kReplicate = false>
+__attribute__((noinline)) size_t Lt128Synthesized(Vec, Vec, MFromV<Vec> &);
+
+template <bool kReplicate> struct Lt128SynthesizedObj {
+  template <typename Vec> size_t operator()(Vec a, Vec b, MFromV<Vec> &m) {
+    return Lt128Synthesized<Vec, kReplicate>(a, b, m);
+  }
+
+  const char *Name() const { NAME_REPLICATE("Lt128Synthesized", kReplicate); }
+};
+
+template <typename Vec, bool kReplicate = false>
+__attribute__((noinline)) size_t Lt128Synthesized2(Vec, Vec, MFromV<Vec> &);
+
+template <bool kReplicate> struct Lt128Synthesized2Obj {
+  template <typename Vec> size_t operator()(Vec a, Vec b, MFromV<Vec> &m) {
+    return Lt128Synthesized2<Vec, kReplicate>(a, b, m);
+  }
+
+  const char *Name() const { NAME_REPLICATE("Lt128Synthesized2", kReplicate); }
+};
+
 // Run a single template on a single type, you need to change the printing.
 template <typename Obj, typename T>
 void RunAndPrintCyclesObj(const uint64_t *pa, const uint64_t *pb) {
